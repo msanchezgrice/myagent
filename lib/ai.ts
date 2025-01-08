@@ -6,30 +6,42 @@ export type Message = {
   content: string;
 };
 
-const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-});
+function getOpenAIClient() {
+  const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+  if (!apiKey) {
+    console.error('OpenAI API key is missing. Please check your environment variables.');
+    throw new Error('OpenAI API key is not configured');
+  }
+
+  // Log the first few characters of the API key for debugging (in development only)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('OpenAI API key starts with:', apiKey.substring(0, 4) + '...');
+  }
+
+  return new OpenAI({
+    apiKey,
+    dangerouslyAllowBrowser: true
+  });
+}
 
 export async function generateResponse(messages: Message[], agent: Agent): Promise<string> {
-  if (!process.env.NEXT_PUBLIC_OPENAI_API_KEY) {
-    throw new Error('No AI provider configured. Please set up OpenAI.');
-  }
-
-  // Create the system message that defines the agent's personality
-  const systemPrompt = `You are an AI agent named ${agent.name}. ${
-    agent.personality ? `Your personality is ${agent.personality}.` : ''
-  } ${
-    agent.interests?.length
-      ? `Your interests include: ${agent.interests.join(', ')}.`
-      : ''
-  }
-  
-  ${agent.description || ''}
-  
-  Please respond to the user's messages in a way that reflects your personality and interests.
-  Keep your responses concise and engaging.`;
-
   try {
+    const openai = getOpenAIClient();
+    
+    // Create the system message that defines the agent's personality
+    const systemPrompt = `You are an AI agent named ${agent.name}. ${
+      agent.personality ? `Your personality is ${agent.personality}.` : ''
+    } ${
+      agent.interests?.length
+        ? `Your interests include: ${agent.interests.join(', ')}.`
+        : ''
+    }
+    
+    ${agent.description || ''}
+    
+    Please respond to the user's messages in a way that reflects your personality and interests.
+    Keep your responses concise and engaging.`;
+
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
@@ -43,10 +55,21 @@ export async function generateResponse(messages: Message[], agent: Agent): Promi
       max_tokens: 500,
     });
 
-    return response.choices[0]?.message?.content || 'I apologize, but I was unable to generate a response.';
+    if (!response.choices[0]?.message?.content) {
+      console.error('OpenAI response was empty:', response);
+      return 'I apologize, but I was unable to generate a response.';
+    }
+
+    return response.choices[0].message.content;
   } catch (error) {
-    console.error('Error generating response:', error);
-    throw error;
+    console.error('Error in generateResponse:', error);
+    if (error instanceof Error) {
+      if (error.message.includes('API key')) {
+        throw new Error('OpenAI API key is not properly configured. Please check your environment variables.');
+      }
+      throw error;
+    }
+    throw new Error('An unexpected error occurred while generating the response.');
   }
 }
 
