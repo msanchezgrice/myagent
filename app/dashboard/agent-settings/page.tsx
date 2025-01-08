@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase';
 import { Agent } from '@/lib/supabase';
 
-export default function AgentSettingsPage() {
+function AgentSettingsForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const agentId = searchParams.get('id');
@@ -263,5 +263,17 @@ export default function AgentSettingsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AgentSettingsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+      </div>
+    }>
+      <AgentSettingsForm />
+    </Suspense>
   );
 } 
