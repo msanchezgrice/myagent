@@ -6,15 +6,16 @@ export type Agent = {
   user_id: string;
   slug: string;
   name: string;
-  description: string | null;
-  personality: string | null;
-  interests: string[] | null;
-  prompt: string | null;
-  fee_amount: number | null;
-  fee_token: string;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  description?: string;
+  personality?: string;
+  interests?: string[];
+  facts?: string[];
+  prompt?: string;
+  fee_amount?: number;
+  fee_token?: string;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type AgentConversation = {

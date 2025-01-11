@@ -35,6 +35,10 @@ export async function generateResponse(messages: Message[], agent: Agent): Promi
       agent.interests?.length
         ? `Your interests include: ${agent.interests.join(', ')}.`
         : ''
+    } ${
+      agent.facts?.length
+        ? `Key facts about you: ${agent.facts.join(', ')}.`
+        : ''
     }
     
     ${agent.description || ''}
@@ -44,7 +48,7 @@ export async function generateResponse(messages: Message[], agent: Agent): Promi
     Keep your responses concise, professional, and focused on facilitating meaningful connections.`;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4',
       messages: [
         { role: 'system', content: systemPrompt },
         ...messages.map(msg => ({

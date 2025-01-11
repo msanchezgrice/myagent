@@ -7,9 +7,9 @@ import React from 'react';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Opportuna - Your AI-Powered Business Card',
-  description:
-    'Let your AI agent handle inquiries, schedule interviews, and negotiate rates. Perfect for early-career professionals looking to get discovered.',
+  title: 'Oportuna - Your AI-Powered Business Card',
+  description: 'Create your AI-powered business card that helps manage inquiries, schedule interviews, and negotiate rates.',
+  metadataBase: new URL('https://oportuna.me'),
 };
 
 export default function RootLayout({

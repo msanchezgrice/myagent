@@ -37,19 +37,30 @@ export default function DashboardPage() {
 
         // Fetch analytics data for all agents
         const agentIds = agentsData?.map((agent) => agent.id) || [];
-        const [visitsData, conversationsData, transactionsData] = await Promise.all([
-          supabase.from('agent_visits').select('*').in('agent_id', agentIds),
-          supabase.from('agent_conversations').select('*').in('agent_id', agentIds),
-          supabase.from('transactions').select('*').in('agent_id', agentIds),
+        
+        const [visitsCount, conversationsCount, transactionsSum] = await Promise.all([
+          supabase
+            .from('agent_visits')
+            .select('count', { count: 'exact' })
+            .in('agent_id', agentIds),
+          supabase
+            .from('agent_conversations')
+            .select('count', { count: 'exact' })
+            .in('agent_id', agentIds),
+          supabase
+            .from('transactions')
+            .select('amount')
+            .in('agent_id', agentIds)
+            .eq('status', 'completed')
         ]);
 
         // Calculate stats
-        const totalVisits = visitsData.data?.length || 0;
-        const totalConversations = conversationsData.data?.length || 0;
-        const totalEarnings = transactionsData.data?.reduce(
+        const totalVisits = visitsCount.count || 0;
+        const totalConversations = conversationsCount.count || 0;
+        const totalEarnings = transactionsSum.data?.reduce(
           (sum, tx) => sum + (tx.amount || 0),
           0
-        );
+        ) || 0;
 
         setAgents(agentsData || []);
         setStats({
@@ -135,18 +146,26 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="space-x-2">
-                    <Link
-                      href={`/agent/${agent.slug}`}
-                      className="text-blue-400 hover:text-blue-300"
-                    >
-                      View
-                    </Link>
-                    <Link
-                      href={`/dashboard/agent-settings?id=${agent.id}`}
-                      className="text-blue-400 hover:text-blue-300"
-                    >
-                      Edit
-                    </Link>
+                    <div className="flex space-x-4">
+                      <Link
+                        href={`/agent/${agent.slug}`}
+                        className="text-blue-400 hover:text-blue-300"
+                      >
+                        View
+                      </Link>
+                      <Link
+                        href={`/dashboard/agent-settings?id=${agent.id}`}
+                        className="text-blue-400 hover:text-blue-300"
+                      >
+                        Edit
+                      </Link>
+                      <Link
+                        href={`/dashboard/history/${agent.id}`}
+                        className="text-blue-400 hover:text-blue-300"
+                      >
+                        History
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>

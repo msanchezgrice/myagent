@@ -6,10 +6,10 @@ export default function Home() {
       {/* Hero Section */}
       <section className="container mx-auto px-6 py-32">
         <div className="text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-8">
-            Opportuna
+          <h1 className="text-4xl sm:text-6xl font-bold mb-8">
+            Oportuna
           </h1>
-          <p className="text-2xl font-semibold text-blue-400 mb-6">
+          <p className="text-xl sm:text-2xl text-gray-300 mb-8">
             Opportunities at Your Doorstep, Filtered by Your Agent
           </p>
           <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto">

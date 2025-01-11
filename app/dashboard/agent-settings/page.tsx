@@ -16,6 +16,7 @@ function AgentSettingsForm() {
     description: '',
     personality: '',
     interests: [],
+    facts: [],
     fee_amount: 0,
     fee_token: 'ETH',
     is_active: true,
@@ -174,9 +175,21 @@ function AgentSettingsForm() {
                 rows={4}
                 placeholder="Customize how your agent should behave and respond. This will be used as the system prompt for the AI."
               />
-              <p className="mt-1 text-sm text-gray-400">
-                This is the base instruction set for your agent. It helps define how your agent should interact, what knowledge to emphasize, and how to handle specific situations.
-              </p>
+              <div className="mt-2 text-sm text-gray-400">
+                <p className="mb-2">Current prompt structure if not customized:</p>
+                <pre className="bg-gray-700/30 p-3 rounded-lg overflow-x-auto whitespace-pre-wrap">
+                  {`You are an AI agent named [Name].
+${formData.personality ? `Your personality is ${formData.personality}.` : ''}
+${formData.interests?.length ? `Your interests include: ${formData.interests.join(', ')}.` : ''}
+${formData.facts?.length ? `Key facts about you: ${formData.facts.join(', ')}.` : ''}
+
+${formData.description || ''}
+
+You are a professional business card that helps handle inquiries, schedule interviews, and negotiate rates.
+Your goal is to help your owner get discovered for relevant opportunities while respecting their preferences and requirements.
+Keep your responses concise, professional, and focused on facilitating meaningful connections.`}
+                </pre>
+              </div>
             </div>
 
             <div>
@@ -208,6 +221,25 @@ function AgentSettingsForm() {
                 }
                 className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="e.g., technology, science, art"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Facts (comma-separated)
+              </label>
+              <input
+                type="text"
+                value={
+                  Array.isArray(formData.facts)
+                    ? formData.facts.join(', ')
+                    : formData.facts || ''
+                }
+                onChange={(e) =>
+                  setFormData({ ...formData, facts: e.target.value.split(',').map(i => i.trim()) })
+                }
+                className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="e.g., graduated from MIT, 5 years of experience, fluent in 3 languages"
               />
             </div>
 
