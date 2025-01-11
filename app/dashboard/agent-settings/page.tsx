@@ -164,6 +164,22 @@ function AgentSettingsForm() {
             </div>
 
             <div>
+              <label className="block text-sm font-medium mb-2">Prompt</label>
+              <textarea
+                value={formData.prompt || ''}
+                onChange={(e) =>
+                  setFormData({ ...formData, prompt: e.target.value })
+                }
+                className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={4}
+                placeholder="Customize how your agent should behave and respond. This will be used as the system prompt for the AI."
+              />
+              <p className="mt-1 text-sm text-gray-400">
+                This is the base instruction set for your agent. It helps define how your agent should interact, what knowledge to emphasize, and how to handle specific situations.
+              </p>
+            </div>
+
+            <div>
               <label className="block text-sm font-medium mb-2">Personality</label>
               <input
                 type="text"

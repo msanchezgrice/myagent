@@ -1,20 +1,46 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Database } from './database.types';
+import type { Database } from './database.types';
 
-// For server-side operations
-export const supabase = createSupabaseClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-// For client-side operations
-export const createBrowserClient = () => {
-  return createClientComponentClient<Database>();
+export type Agent = {
+  id: string;
+  user_id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  personality: string | null;
+  interests: string[] | null;
+  prompt: string | null;
+  fee_amount: number | null;
+  fee_token: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 };
 
-// Types
-export type Profile = Database['public']['Tables']['profiles']['Row'];
-export type Agent = Database['public']['Tables']['agents']['Row'];
-export type AgentConversation = Database['public']['Tables']['agent_conversations']['Row'];
-export type Transaction = Database['public']['Tables']['transactions']['Row']; 
+export type AgentConversation = {
+  id: string;
+  agent_id: string;
+  visitor_id: string | null;
+  messages: any[];
+  metadata: any;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Transaction = {
+  id: string;
+  agent_id: string;
+  conversation_id: string | null;
+  from_address: string;
+  amount: number;
+  token: string;
+  tx_hash: string;
+  status: 'pending' | 'completed' | 'failed';
+  created_at: string;
+  updated_at: string;
+};
+
+// Create a Supabase client for use in the browser
+export const createBrowserClient = () => {
+  return createClientComponentClient<Database>();
+}; 

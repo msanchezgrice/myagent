@@ -29,7 +29,7 @@ export async function generateResponse(messages: Message[], agent: Agent): Promi
     const openai = getOpenAIClient();
     
     // Create the system message that defines the agent's personality
-    const systemPrompt = `You are an AI agent named ${agent.name}. ${
+    const systemPrompt = agent.prompt || `You are an AI agent named ${agent.name}. ${
       agent.personality ? `Your personality is ${agent.personality}.` : ''
     } ${
       agent.interests?.length
@@ -39,8 +39,9 @@ export async function generateResponse(messages: Message[], agent: Agent): Promi
     
     ${agent.description || ''}
     
-    Please respond to the user's messages in a way that reflects your personality and interests.
-    Keep your responses concise and engaging.`;
+    You are a professional business card that helps handle inquiries, schedule interviews, and negotiate rates.
+    Your goal is to help your owner get discovered for relevant opportunities while respecting their preferences and requirements.
+    Keep your responses concise, professional, and focused on facilitating meaningful connections.`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',

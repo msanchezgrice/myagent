@@ -7,11 +7,14 @@ export default function Home() {
       <section className="container mx-auto px-6 py-32">
         <div className="text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-8">
-            Meet Your Personal AI Agent
+            Opportuna
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl mx-auto">
-            Create, customize, and monetize your own AI agent. Set your preferences,
-            define its personality, and let it work for you.
+          <p className="text-2xl font-semibold text-blue-400 mb-6">
+            Opportunities at Your Doorstep, Filtered by Your Agent
+          </p>
+          <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto">
+            Your AI-powered business card that handles inquiries, schedules interviews, 
+            and negotiates rates - helping you get discovered for the right opportunities.
           </p>
           <div className="space-x-4">
             <Link
@@ -33,7 +36,7 @@ export default function Home() {
       {/* Features Section */}
       <section className="container mx-auto px-6 py-24 bg-gray-900/50">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-          Features
+          Perfect for Early-Career Professionals
         </h2>
         <div className="grid md:grid-cols-3 gap-12">
           {features.map((feature, index) => (
@@ -48,13 +51,40 @@ export default function Home() {
         </div>
       </section>
 
+      {/* How It Works Section */}
+      <section className="container mx-auto px-6 py-24">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+          How It Works
+        </h2>
+        <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+          <div className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl">
+            <h3 className="text-xl font-semibold mb-4">For You</h3>
+            <ul className="space-y-4 text-gray-300">
+              <li>✓ Create your professional profile and set your preferences</li>
+              <li>✓ Define your expertise, availability, and rate expectations</li>
+              <li>✓ Let your agent handle initial conversations and scheduling</li>
+              <li>✓ Focus on opportunities that match your criteria</li>
+            </ul>
+          </div>
+          <div className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl">
+            <h3 className="text-xl font-semibold mb-4">For Recruiters</h3>
+            <ul className="space-y-4 text-gray-300">
+              <li>✓ Instant responses to their inquiries</li>
+              <li>✓ Pre-qualification based on your criteria</li>
+              <li>✓ Easy scheduling for deeper conversations</li>
+              <li>✓ Small fee or coffee fund donation for direct contact</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="container mx-auto px-6 py-24 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-8">
-          Ready to Create Your Agent?
+          Ready to Let Your Agent Work for You?
         </h2>
         <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-          Join now and start building your personalized AI agent in minutes.
+          Join now and start getting discovered by the right opportunities.
         </p>
         <Link
           href="/signup"
@@ -69,18 +99,18 @@ export default function Home() {
 
 const features = [
   {
-    title: 'Customizable Personality',
+    title: 'Smart Filtering',
     description:
-      'Define your agent\'s tone, interests, and behavior to match your preferences.',
+      'Your agent pre-qualifies opportunities and handles initial conversations based on your preferences.',
   },
   {
-    title: 'Monetization',
+    title: 'Automated Scheduling',
     description:
-      'Set custom rates and earn cryptocurrency through your agent\'s interactions.',
+      'Let your agent handle calendar coordination for interviews and meetings with interested parties.',
   },
   {
-    title: 'Analytics Dashboard',
+    title: 'Value Your Time',
     description:
-      'Track your agent\'s performance, engagement, and earnings in real-time.',
+      'Set a small fee or coffee fund donation for direct contact, ensuring meaningful connections.',
   },
 ]; 

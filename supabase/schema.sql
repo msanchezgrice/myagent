@@ -25,6 +25,7 @@ CREATE TABLE agents (
     description TEXT,
     personality TEXT,
     interests TEXT[],
+    prompt TEXT,
     fee_amount DECIMAL(18,8),
     fee_token TEXT DEFAULT 'ETH',
     is_active BOOLEAN DEFAULT true,

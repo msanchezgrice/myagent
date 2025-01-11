@@ -7,9 +7,9 @@ import React from 'react';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'My Agent - Create Your AI Agent',
+  title: 'Opportuna - Your AI-Powered Business Card',
   description:
-    'Create, customize, and monetize your own AI agent. Set preferences, define personality, and let it work for you.',
+    'Let your AI agent handle inquiries, schedule interviews, and negotiate rates. Perfect for early-career professionals looking to get discovered.',
 };
 
 export default function RootLayout({
