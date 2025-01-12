@@ -14,31 +14,46 @@ export default function AgentHistoryPage() {
 
   useEffect(() => {
     const fetchHistory = async () => {
+      console.log('Starting history fetch...');
+      console.log('Current params:', params);
       const supabase = createBrowserClient();
+      console.log('Fetching history for agent:', params.agentId);
 
       try {
         // Fetch agent details
+        console.log('Fetching agent details...');
         const { data: agentData, error: agentError } = await supabase
           .from('agents')
           .select('*')
           .eq('id', params.agentId)
           .single();
 
-        if (agentError) throw agentError;
+        if (agentError) {
+          console.error('Error fetching agent:', agentError);
+          throw agentError;
+        }
+        console.log('Agent data:', agentData);
         setAgent(agentData);
 
         // Fetch conversations
+        console.log('Fetching conversations...');
         const { data: conversationsData, error: conversationsError } = await supabase
           .from('agent_conversations')
           .select('*')
           .eq('agent_id', params.agentId)
           .order('created_at', { ascending: false });
 
-        if (conversationsError) throw conversationsError;
+        if (conversationsError) {
+          console.error('Error fetching conversations:', conversationsError);
+          throw conversationsError;
+        }
+        console.log('Conversations data:', conversationsData);
+        console.log('Number of conversations found:', conversationsData?.length || 0);
         setConversations(conversationsData || []);
       } catch (error) {
-        console.error('Error fetching history:', error);
+        console.error('Error in fetchHistory:', error);
       } finally {
+        console.log('Fetch history completed');
         setLoading(false);
       }
     };
@@ -87,7 +102,7 @@ export default function AgentHistoryPage() {
               </div>
 
               <div className="space-y-4">
-                {conversation.messages.map((message: any, index: number) => (
+                {Array.isArray(conversation.messages) && conversation.messages.map((message: any, index: number) => (
                   <div
                     key={index}
                     className={`p-3 rounded ${
@@ -99,7 +114,7 @@ export default function AgentHistoryPage() {
                     <p className="text-sm text-gray-400 mb-1">
                       {message.role === 'assistant' ? agent?.name : 'Visitor'}
                     </p>
-                    <p>{message.content}</p>
+                    <p className="whitespace-pre-wrap">{message.content}</p>
                   </div>
                 ))}
               </div>

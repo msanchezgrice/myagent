@@ -117,4 +117,62 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Trigger for new user creation
 CREATE OR REPLACE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
-    FOR EACH ROW EXECUTE FUNCTION handle_new_user(); 
+    FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+
+-- Function to track agent visits
+CREATE OR REPLACE FUNCTION track_agent_visit()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO agent_visits (agent_id, visitor_ip, user_agent, referrer)
+  VALUES (
+    NEW.agent_id,
+    current_setting('request.headers')::json->>'x-forwarded-for',
+    current_setting('request.headers')::json->>'user-agent',
+    current_setting('request.headers')::json->>'referer'
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger to track visits on new conversations
+CREATE OR REPLACE TRIGGER on_conversation_created
+  AFTER INSERT ON agent_conversations
+  FOR EACH ROW
+  EXECUTE FUNCTION track_agent_visit();
+
+-- Enable RLS
+ALTER TABLE agent_conversations ENABLE ROW LEVEL SECURITY;
+
+-- Policy for inserting conversations (anyone can create)
+CREATE POLICY "Anyone can create conversations"
+ON agent_conversations FOR INSERT
+TO public
+WITH CHECK (true);
+
+-- Policy for viewing conversations (agent owners can view)
+CREATE POLICY "Agent owners can view conversations"
+ON agent_conversations FOR SELECT
+TO public
+USING (
+  agent_id IN (
+    SELECT id FROM agents
+    WHERE user_id = auth.uid()
+  )
+);
+
+-- Policy for updating conversations (agent owners can update)
+CREATE POLICY "Agent owners can update conversations"
+ON agent_conversations FOR UPDATE
+TO public
+USING (
+  agent_id IN (
+    SELECT id FROM agents
+    WHERE user_id = auth.uid()
+  )
+)
+WITH CHECK (
+  agent_id IN (
+    SELECT id FROM agents
+    WHERE user_id = auth.uid()
+  )
+); 

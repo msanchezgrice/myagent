@@ -3,20 +3,26 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase';
-import { generateResponse, Message } from '@/lib/ai';
+import { generateResponse } from '@/lib/ai';
 import { sendPayment } from '@/lib/web3';
 import { Agent } from '@/lib/supabase';
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
 export default function AgentChatPage() {
   const params = useParams();
   const [agent, setAgent] = useState<Agent | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [paymentRequired, setPaymentRequired] = useState(false);
 
   useEffect(() => {
     const fetchAgent = async () => {
+      console.log('Fetching agent with slug:', params.slug);
       const supabase = createBrowserClient();
       const { data, error } = await supabase
         .from('agents')
@@ -29,14 +35,15 @@ export default function AgentChatPage() {
         return;
       }
 
+      console.log('Found agent:', data);
       setAgent(data);
       // Add initial greeting
-      setMessages([
-        {
-          role: 'assistant',
-          content: `Hello! I'm ${data.name}. How can I help you today?`,
-        },
-      ]);
+      const initialMessage = {
+        role: 'assistant' as const,
+        content: `Hello! I'm ${data.name}. How can I help you today?`,
+      };
+      console.log('Setting initial message:', initialMessage);
+      setMessages([initialMessage]);
     };
 
     fetchAgent();
@@ -46,7 +53,7 @@ export default function AgentChatPage() {
     e.preventDefault();
     if (!input.trim() || !agent) return;
 
-    const newMessage: Message = { role: 'user', content: input };
+    const newMessage: ChatMessage = { role: 'user', content: input };
     setMessages((prev) => [...prev, newMessage]);
     setInput('');
     setLoading(true);
@@ -59,16 +66,57 @@ export default function AgentChatPage() {
       }
 
       const response = await generateResponse([...messages, newMessage], agent);
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: response },
-      ]);
+      const newAssistantMessage: ChatMessage = { role: 'assistant', content: response };
+      
+      // Save conversation to Supabase
+      const supabase = createBrowserClient();
+      console.log('Saving conversation for agent:', agent.id);
+      
+      const { data: existingConversation } = await supabase
+        .from('agent_conversations')
+        .select('id, messages')
+        .eq('agent_id', agent.id)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      console.log('Existing conversation:', existingConversation);
+
+      if (existingConversation && existingConversation.length > 0) {
+        // Update existing conversation
+        console.log('Updating existing conversation:', existingConversation[0].id);
+        const { error: updateError } = await supabase
+          .from('agent_conversations')
+          .update({
+            messages: [...messages, newMessage, newAssistantMessage],
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingConversation[0].id);
+          
+        if (updateError) {
+          console.error('Error updating conversation:', updateError);
+        }
+      } else {
+        // Create new conversation
+        console.log('Creating new conversation');
+        const { error: insertError } = await supabase
+          .from('agent_conversations')
+          .insert([{
+            agent_id: agent.id,
+            messages: [...messages, newMessage, newAssistantMessage],
+          }]);
+          
+        if (insertError) {
+          console.error('Error creating conversation:', insertError);
+        }
+      }
+
+      setMessages((prev) => [...prev, newAssistantMessage]);
     } catch (error) {
       console.error('Error generating response:', error);
       setMessages((prev) => [
         ...prev,
         {
-          role: 'assistant',
+          role: 'assistant' as const,
           content: 'Sorry, I encountered an error. Please try again.',
         },
       ]);

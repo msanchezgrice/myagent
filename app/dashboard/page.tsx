@@ -41,11 +41,11 @@ export default function DashboardPage() {
         const [visitsCount, conversationsCount, transactionsSum] = await Promise.all([
           supabase
             .from('agent_visits')
-            .select('count', { count: 'exact' })
+            .select('*', { count: 'exact' })
             .in('agent_id', agentIds),
           supabase
             .from('agent_conversations')
-            .select('count', { count: 'exact' })
+            .select('*', { count: 'exact' })
             .in('agent_id', agentIds),
           supabase
             .from('transactions')
