@@ -20,6 +20,7 @@ export default function Home() {
             <Link
               href="/signup"
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium text-lg transition-colors inline-block"
+              data-ph-event="signup_click"
             >
               Get Started
             </Link>
@@ -89,6 +90,7 @@ export default function Home() {
         <Link
           href="/signup"
           className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium text-lg transition-colors inline-block"
+          data-ph-event="signup_click"
         >
           Create Your Agent
         </Link>
